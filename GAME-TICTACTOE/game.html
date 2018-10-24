@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tic Tac Toe</title>
+		<link rel="stylesheet" href="main.css">
+		 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	 
+	</head>
+	<body style="margin-top:2%;">
+		<div class="container">
+		<div class="col-md-4">	
+			<div class="well" id="well">
+			<div class="menu">
+				<h1>TicTacToe App</h1> 
+				<h4>Yeni Oyun Aç</h4>
+				<div class="form-group">
+				<input type="text" class="form-control" name="name" id="nameNew" placeholder="Enter your name" required><br/>
+				<button class="btn btn-primary" id="new">New Game</button>
+				</div>
+				<br><br>
+				<h4>Oyuna Katıl</h4>
+				<div class="form-group" id="say">
+				<input type="text"  class="form-control"  name="name" id="nameJoin" placeholder="Enter your name" required><br/>
+ 				<input type="text"   class="form-control" name="room" id="room" placeholder="Enter Game ID" required><br/>
+				<button class="btn btn-primary" id="join">Join Game</button>
+		 
+			 
+			 
+			</div>
+			</div>
+			</div>
+		</div>	
+      
+		<div class="col-md-4">
+		<div class="gameBoard">
+			
+				<table class="center">
+					<tr>
+						<td><button class="tile" id="button_00"></button></td>
+						<td><button class="tile" id="button_01"></button></td>
+						<td><button class="tile" id="button_02"></button></td>
+					</tr>
+					<tr>
+						<td><button class="tile" id="button_10"></button></td>
+						<td><button class="tile" id="button_11"></button></td>
+						<td><button class="tile" id="button_12"></button></td>
+					</tr>
+					<tr>
+						<td><button class="tile" id="button_20" onclick=""></button></td>
+						<td><button class="tile" id="button_21"></button></td>
+						<td><button class="tile" id="button_22"></button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="gameInfo" class="col-md-4">
+				<div class="well" id="well">
+					<h3>Game Info</h3>
+					<ul class="list-group" id="rooms">
+						<h4 id="userHello"> </h5>
+						<h5 id="turn"></h6>
+						<label id="sayac">Gecen Sure:</label>
+					</ul>
+				</div>
+	 </div>
+		</div>
+		<script src="https://code.jquery.com/jquery-latest.min.js"st. type="text/javascript"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+		<script src="main.js"></script>
+	</body>
+</html>
