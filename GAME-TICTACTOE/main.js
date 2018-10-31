@@ -3,23 +3,23 @@
   const P2 = 'O';
   let player;
   let game;
-  var interval;
-  //
+  var isTie=false;
+
   // const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
   const socket = io.connect('http://localhost:5000');
- 
-        var sayac=0;
+
+  /**************************************************/
+  var sayac=0;
         
-				function say() { 
-        sayac++; 
-         
-        }
-        
-        interval=setInterval(function(){ say(); },1000);
-     
-       
-    
-      
+  function say() { 
+  sayac++; 
+   
+  }
+  
+  interval=setInterval(function(){ say(); },1000);
+
+  /***************************************************/
+
   class Player {
     constructor(name, type) {
       this.name = name;
@@ -32,30 +32,21 @@
     static get wins() {
       return [7, 56, 448, 73, 146, 292, 273, 84];
     }
-
-    // Set the bit of the move played by the player
-    // tileValue - Bitmask used to set the recently played move.
-    updatePlaysArr(tileValue,timecounter) {
-      var time=0;
+    //Oyuncunun Bilgilerini güncelleme ve çekme işlemleri.
+    updatePlaysArr(tileValue,sayacs) {
       this.playsArr += tileValue;
-      this.timer+=timecounter;
-      $('#sayac').html('Gecen Sure : '+this.timer+' Saniye'+'<br/>Hamle Süresi :'+timecounter+' Saniye');
-    /*  if(this.type=="X") {  socket.emit('updateTimer1',{time:this.timer})}//pl1 timer servera gitti
-      else if(this.type=="O"){ socket.emit('updateTimer2',{time:this.timer})}//pl2 timer serverda*/
-       
+      this.timer+=sayacs;
+      $('#sayac').html('Gecen Sure : '+this.timer+' Saniye'+'<br/>Hamle Süresi :'+sayacs+' Saniye');
     }
 
     getPlaysArr() {
       return this.playsArr;
     }
 
-    // Set the currentTurn for player to turn and update UI to reflect the same.
-    setCurrentTurn(turn) { 
-   
+    // Oyuncu Sırası Güncel
+    setCurrentTurn(turn) {
       this.currentTurn = turn;
       const message = turn ? 'Your turn' : 'Waiting for Opponent';
-        
-    	
       $('#turn').text(message);
     }
 
@@ -72,7 +63,7 @@
     }
   }
 
-  // roomId Id of the room in which the game is running on the server.
+  // Oyun class
   class Game {
     constructor(roomId) {
       this.roomId = roomId;
@@ -80,12 +71,11 @@
       this.moves = 0;
     }
 
-    // Create the Game board by attaching event listeners to the buttons.
+    // Game board yaratılıyor.
     createGameBoard() {
       function tileClickHandler() {
         const row = parseInt(this.id.split('_')[1][0], 10);
         const col = parseInt(this.id.split('_')[1][1], 10);
-          console.log(row+''+col);
         if (!player.getCurrentTurn() || !game) {
           alert('Its not your turn!');
           return;
@@ -95,40 +85,39 @@
           alert('This tile has already been played on!');
           return;
         }
-        
-        // Update board after your turn.
+
+        // oyuncu sırası güncel.
         game.playTurn(this);
         game.updateBoard(player.getPlayerType(), row, col, this.id);
 
         player.setCurrentTurn(false);
-        player.updatePlaysArr((1 << ((row * 3) + col)),sayac);
+        player.updatePlaysArr((1 << ((row * 3) + col)),sayac);//sayac gönderildi.
 
         game.checkWinner();
       }
 
-      for (let i = 0; i < 3; i++) {//on clik atanıyor
+      for (let i = 0; i < 3; i++) {
         this.board.push(['', '', '']);
         for (let j = 0; j < 3; j++) {
           $(`#button_${i}${j}`).on('click', tileClickHandler);
         }
       }
     }
-    // Remove the menu from DOM, display the gameboard and greet the player.
+    // Board ayarları güncel
     displayBoard(message) {
       $('.menu').css('display', 'none');
-      $('#menu').css('display', 'none');
       $('.gameBoard').css('display', 'block');
-      $('#gameInfo').css('display', 'block');
+      $('#gameInfo').css('display','block');
       $('#userHello').html(message);
       this.createGameBoard();
     }
     /**
-     * Update game board UI
+     * Değişken açıklamaları
      *
-     * @param {string} type Type of player(X or O)
-     * @param {int} row Row in which move was played
-     * @param {int} col Col in which move was played
-     * @param {string} tile Id of the the that was clicked
+     * @param {string} type Player tipi X veya O
+     * @param {int} row Oynanan Satır değeri.
+     * @param {int} col Oynanan Sütun Değeri
+     * @param {string} tile Hangi buttona tıklandı.
      */
     updateBoard(type, row, col, tile) {
       $(`#${tile}`).text(type).prop('disabled', true);
@@ -140,11 +129,11 @@
       return this.roomId;
     }
 
-    // Send an update to the opponent to update their UI's tile
+    // Tıklanan tile bilgisi gönderildi.
     playTurn(tile) {
-      const clickedTile = $(tile).attr('id'); 
-   
-      // Emit an event to update other player that you've played your turn.
+      const clickedTile = $(tile).attr('id');
+
+       
       socket.emit('playTurn', {
         tile: clickedTile,
         room: this.getRoomId(),
@@ -152,13 +141,7 @@
     }
     /**
      *
-     * To determine a win condition, each square is "tagged" from left
-     * to right, top to bottom, with successive powers of 2.  Each cell
-     * thus represents an individual bit in a 9-bit string, and a
-     * player's squares at any given time can be represented as a
-     * unique 9-bit value. A winner can thus be easily determined by
-     * checking whether the player's current 9 bits have covered any
-     * of the eight "three-in-a-row" combinations.
+     * Hesaplama Algoritması. Kazanan Belirlenir.
      *
      *     273                 84
      *        \               /
@@ -170,61 +153,44 @@
      *       =================
      *         73   146   292
      *
-     *  We have these numbers in the Player.wins array and for the current
-     *  player, we've stored this information in playsArr.
      */
     checkWinner() {
       const currentPlayerPositions = player.getPlaysArr();
-    
+
       console.log(player.name+'-'+player.timer);
- 
+      socket.emit('updateTimer',{time:player.timer,type:player.type});//timer update
+
+
       Player.wins.forEach((winningPosition) => {
         if ((winningPosition & currentPlayerPositions) === winningPosition) {
           game.announceWinner();
         }
-      });
+      });//Buraya kadar kazanan bilgisi kontrolü
+      var tieMessage;
+ 
+  
+      if (this.checkTie()) {//Beraberlik durumunda süre kontrolü
 
-      /*if (this.checkTie()!="") {
-        socket.emit('gameEnded', {
-          room: this.getRoomId(),
-          message: this.checkTie(),
-        });
-        alert(this.checkTie());
-        location.reload();
-      }*/
-
-      const tieMessage = 'Game Tied :(';
-      if (this.checkTie()) {
+        socket.emit('GetResult');
+      socket.on('finalResult',(data)=>{
+        tieMessage=data.result;
+        alert(tieMessage);
         socket.emit('gameEnded', {
           room: this.getRoomId(),
           message: tieMessage,
         });
-        alert(tieMessage);
+        
+      }); 
+
         location.reload();
       }
     }
-    //checkTie fonksiyonunu yenile.
-    
-   /* checkTie() {   
-      if(this.moves>=9){
-        socket.emit('checkTime',{room: this.getRoomId()});
-      }
-      var tieWinMessage="";
-      socket.on('checkResult',(data)=>{
-      
-      tieWinMessage="Süre Farkıyla Kazanan :"+data+"<br/>X : "+data.P1+"<br/>O : "+data.P2;
-      game.endGame(tieWinMessage);
-      socket.leave(data.room);
-      })
-      return tieWinMessage;
-    }*/
 
     checkTie() {
       return this.moves >= 9;
     }
 
-    // Announce the winner if the current client has won. 
-    // Broadcast this on the room to let the opponent know.
+    //Kazanan İlanı
     announceWinner() {
       const message = `${player.getPlayerName()} wins!`;
       socket.emit('gameEnded', {
@@ -235,14 +201,15 @@
       location.reload();
     }
 
-    // End the game if the other player won.
+     
     endGame(message) {
+      console.log("endGame kontrol : "+message);
       alert(message);
       location.reload();
     }
   }
 
-  // Create a new game. Emit newGame event.
+  // Yeni oyun yarat
   $('#new').on('click', () => {
     const name = $('#nameNew').val();
     if (!name) {
@@ -251,10 +218,9 @@
     }
     socket.emit('createGame', { name });
     player = new Player(name, P1);
- 
   });
 
-  // Join an existing game on the entered roomId. Emit the joinGame event.
+  // Oyuna KAtıl
   $('#join').on('click', () => {
     const name = $('#nameJoin').val();
     const roomID = $('#room').val();
@@ -266,19 +232,21 @@
     player = new Player(name, P2);
   });
 
-  // New Game created by current client. Update the UI and create new Game var.
+  // Yeni oyun bilgileri ekrana yazdır.
   socket.on('newGame', (data) => {
     const message =
-      `Merhaba, ${data.name}.<br> RoomID:<strong> ${data.room}</strong><br>2.Oyuncu Bekleniyor...`;
+      `Hello, ${data.name}.
+       <br/>Game ID: ${data.room}. 
+       <br/>Waiting for player 2...`;
 
     // Create game for player 1
     game = new Game(data.room);
     game.displayBoard(message);
+  
   });
 
   /**
-	 * If player creates the game, he'll be P1(X) and has the first turn.
-	 * This event is received when opponent connects to the room.
+   * Player 1 karşılama mesajı 
 	 */
   socket.on('player1', (data) => {
     const message = `Hello, ${player.getPlayerName()}`;
@@ -286,10 +254,7 @@
     player.setCurrentTurn(false);
   });
 
-  /**
-	 * Joined the game, so player is P2(O). 
-	 * This event is received when P2 successfully joins the game room. 
-	 */
+   
   socket.on('player2', (data) => {
     const message = `Hello, ${data.name}`;
 
@@ -301,8 +266,7 @@
   });
 
   /**
-	 * Opponent played his turn. Update UI.
-	 * Allow the current player to play now. 
+	 *player 2 karşılama mesajı
 	 */
   socket.on('turnPlayed', (data) => {
     const row = data.tile.split('_')[1][0];
@@ -314,8 +278,9 @@
     sayac=0;
   });
 
-  // If the other player wins, this event is received. Notify user game has ended.
+   
   socket.on('gameEnd', (data) => {
+    console.log("gameend kontrol:"+data.message);//deneme
     game.endGame(data.message);
     socket.leave(data.room);
   });
