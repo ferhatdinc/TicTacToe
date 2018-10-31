@@ -1,0 +1,177 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TicTacToe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css">
+		 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+    .btn1{
+        height: 150px; /*Tamamen Tasarımsal*/
+        width: 150px;
+        font-size:60px;
+        font-weight: bold;
+        color:magenta
+        
+    }
+  
+    </style>
+    <script> 
+      var Score=new Array(8).fill('');
+      var IsCompleted=[['','',''],['','',''],['','','']];
+      var LastUser;
+      var GameTied=0;
+      var xTimer=0;
+      var oTimer=0;
+      var oInterval;
+      var xInterval;
+      var sayac=0;
+         function TheGameContinues(){
+                for(i=0;i<=2;i++){
+                Score[0]+=IsCompleted[i][0];
+                Score[1]+=IsCompleted[i][1];
+                Score[2]+=IsCompleted[i][2];
+                Score[3]+=IsCompleted[0][i];
+                Score[4]+=IsCompleted[1][i];
+                Score[5]+=IsCompleted[2][i];
+                Score[6]+=IsCompleted[i][i];
+                Score[7]+=IsCompleted[i][2-i];
+               }
+                   for(j=0;j<8;j++){
+                      if(Score[j]=='ooo'){
+                           alert('0 Oyuncusu Oyunu Kazandı!\nYeniden Başlatmak İçin "OK"a Basınız!');
+                           location.reload();
+                           return;
+                }
+                     else if(Score[j]=='xxx'){
+                            alert('X Oyuncusu Oyunu Kazandı!\nYeniden Başlatmak İçin "OK"a Basınız!');
+                            location.reload();
+                            return;
+                }
+            }
+            if(GameTied==9){
+                
+                if(xTimer>oTimer){alert("Süre ile O Kazandı\nYeniden Başlatmak İçin 'OK'a Basınız!"); }
+                else alert("Süre farkı ile X Kazandı\nYeniden Başlatmak İçin 'OK'a Basınız!");
+                location.reload();
+                return;
+                }
+            Score.fill('');
+        }
+        
+        function SayaciArtir(player)
+        {
+            if(player=='O'){ oTimer+=1; console.log("O Timer:",oTimer);}
+            else {xTimer+=1; console.log("xTimer: ",xTimer);}
+        }
+
+
+    $(function(){
+        $('#new').click(function(){
+            $('#xSayac').html("X Play Time : "+xTimer);
+            $('#oSayac').html("O Play Time : "+oTimer);
+            $('#turn').html('<h4>Its Your Turn:X</h4>');
+            $('#infoGame').css('display', 'block');
+            $('.board').css('display', 'block');
+            
+        });
+
+        $('#tbl1').on('click','#btn1',function(){
+            var P=$(this).val();
+            var P1=P.split(" ");
+            $(this).attr('disabled',true);
+
+            if(LastUser=='x'){
+                 clearInterval(xInterval);
+                 oInterval=setInterval(function(){SayaciArtir('O');},1000);
+                 $('#oSayac').html("O Play Time : "+oTimer);
+                 $('#turn').html('<h4>Its Your Turn:X</h4>');
+                 $(this).html('O');
+                 IsCompleted[P1[0]][P1[1]]='o';
+                 LastUser='o'; 
+                 GameTied+=1; 
+                 setTimeout(TheGameContinues, 200);
+            }
+            else if(LastUser='o'){
+              clearInterval(oInterval);
+              xInterval=setInterval(function(){SayaciArtir('X');},1000);
+              $('#xSayac').html("X Play Time : "+xTimer);
+              $('#turn').html('<h4>Its Your Turn:O</h4>');
+              $(this).html('X');
+              IsCompleted[P1[0]][P1[1]]='x';
+              LastUser='x';
+              GameTied+=1;
+              setTimeout(TheGameContinues, 200);
+            }
+        })
+    })
+    </script>
+</head>
+<body style="margin-top:2%;">
+        <div class="container" style="padding-left:30px; margin-bottom:20px;">
+          <a href="game.html">  <button type="button" class="btn btn-success" style="width:33%">Online</button></a>
+            <a href="PCKarşı.html"><button type="button" class="btn btn-danger" style="width:31.5%">Computer Vs Human</button></a>
+            <a href="MultiPlayer.html"><button type="button" class="btn btn-warning" style="width:33%">Human Vs Human</button></a>
+        </div>
+		<div class="container">
+		<div class="col-md-4">	
+			<div class="well" id="well">
+			<div class="menu">
+				<h1>Tic Tac Toe App</h1> 
+                <h4 style="width: 100%;text-align: center">Click On Button For Play</h4>
+				<button class="btn btn-primary" id="new">Start New Game</button>
+                
+			</div>
+			</div>
+		</div>	
+      
+		<div class="col-md-4">
+		<div class="board">
+                <table id="tbl1">
+                        <tr>
+                            <td><button id="btn1" class="btn1" value="0 0" ></button></td> <!--Value Ve İd Önemli Class Sadece Css İçin-->
+                            <td><button id="btn1" class="btn1" value="0 1" ></button></td>
+                            <td><button id="btn1" class="btn1" value="0 2" ></button></td>
+                
+                        </tr>
+                        <tr> 
+                                <td><button id="btn1" class="btn1" value="1 0" ></button></td>
+                                <td><button id="btn1" class="btn1" value="1 1" ></button></td>
+                                <td><button id="btn1" class="btn1" value="1 2" ></button></td>
+                
+                        </tr>
+                        <tr>
+                                <td><button id="btn1" class="btn1" value="2 0" ></button></td>
+                                <td><button id="btn1" class="btn1" value="2 1" ></button></td>
+                                <td><button id="btn1" class="btn1" value="2 2" ></button></td>
+                
+                        </tr>
+                    </table>
+                
+			 
+			</div>
+		</div>
+		<div id="infoGame" class="col-md-4">
+				<div class="well" id="well">
+					<h3>Game Info</h3>
+					<ul class="list-group" id="rooms">
+						<h4 id="userHello"> </h5>
+						<h5 id="turn"></h6>
+                        <label id="xSayac"></label><br>
+                        <label id="oSayac"></label>
+                        
+					</ul>
+				</div>
+	 </div>
+		</div>
+ 
+		 
+	</body>
+
+ 
+</html>
+

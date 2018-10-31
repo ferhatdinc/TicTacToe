@@ -118,6 +118,7 @@
       $('.menu').css('display', 'none');
       $('#menu').css('display', 'none');
       $('.gameBoard').css('display', 'block');
+      $('#gameInfo').css('display', 'block');
       $('#userHello').html(message);
       this.createGameBoard();
     }

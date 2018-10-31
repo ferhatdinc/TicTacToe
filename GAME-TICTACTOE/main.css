@@ -1,15 +1,18 @@
-.tile{
+.tile,.btn1{
 	width: 80px;
 	height: 80px;
 	font-size: 60px;
 	font-family: Helvetica;
 }
 
-.gameBoard{
+.gameBoard,.board{
 	display: none;
 }
+#gameInfo,#infoGame{
+  display: none;
+}
 
-.center{
+.center,.tbl1{
 	margin: 0 auto;
 }
 
@@ -19,7 +22,7 @@
 
 #button_00,#button_01,#button_02,
 #button_10,#button_11,#button_12,
-#button_20,#button_21,#button_22{
+#button_20,#button_21,#button_22,#btn1{
 	height: 80px;
 	width: 80px;
 	margin: 7px;
