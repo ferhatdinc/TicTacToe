@@ -5,8 +5,8 @@
   let game;
   var isTie=false;
 
-  // const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
-  const socket = io.connect('http://localhost:5000');
+   const socket = io.connect('https://tic-tac-toe-xo-game.herokuapp.com'),
+  //const socket = io.connect('http://localhost:5000');
 
   /**************************************************/
   var sayac=0;
