@@ -17,7 +17,6 @@
 	    font-family: Helvetica;
         
     }
-  
     </style>
     <script> 
       var Score=new Array(8).fill('');
@@ -82,7 +81,7 @@ function Computer(){
         $('#new').click(function(){ 
             $('#infoGame').css('display', 'block');
             $('.board').css('display', 'block');
-            
+            Computer();
         });
         $('#tbl1').on('click','.btn1',function(){
                 var P=$(this).val();
@@ -92,8 +91,7 @@ function Computer(){
                 IsCompleted[P1[0]][P1[1]]='x';
                 GameTied+=1;
                 setTimeout(TheGameContinues, 200);
-                setTimeout(Computer,1);
-               
+                setTimeout(Computer,250);
         })
     })
     </script>
